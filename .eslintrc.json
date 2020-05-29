@@ -59,7 +59,6 @@
     "key-spacing": "error",
     "keyword-spacing": "error",
     "new-parens": "error",
-    "no-bitwise": "warn",
     "no-lonely-if": "warn",
     "no-multiple-empty-lines": "error",
     "no-nested-ternary": "error",
@@ -94,17 +93,11 @@
     "no-useless-rename": "error",
     "object-shorthand": ["error", "always"],
     "prefer-arrow-callback": "warn",
-    "prefer-destructuring": "error",
     "rest-spread-spacing": ["error", "never"],
-    "sort-imports": "error",
     "template-curly-spacing": "error",
     "promise/prefer-await-to-then": "error",
     "optimize-regex/optimize-regex": "warn",
     "@typescript-eslint/semi": ["error", "always"],
-    "@typescript-eslint/member-delimiter-style": [
-      "error",
-      { "multiline": { "delimiter": "none" } }
-    ],
     "@typescript-eslint/brace-style": ["error", "1tbs"],
     "@typescript-eslint/indent": ["error", 2],
     "@typescript-eslint/quotes": ["error", "single", { "avoidEscape": true }],
@@ -122,10 +115,7 @@
       { "allowExpressions": true }
     ],
     "@typescript-eslint/interface-name-prefix": "off",
-    "@typescript-eslint/no-unused-vars": [
-      "error",
-      { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_$" }
-    ],
+    "@typescript-eslint/no-unused-vars": ["error", { "args": "none" }],
     "prettier/prettier": "error"
   }
 }
