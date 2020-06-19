@@ -1,37 +1,47 @@
 import RAM from '../../Devices/RAM';
 import CPU from '../CPU';
+import PPU from '../PPU';
 
 class Bus {
   readonly cpu: CPU;
-  private readonly ram: RAM;
+  readonly ppu: PPU;
+  private readonly cpuRam: RAM;
 
-  constructor(cpu: CPU, ram: RAM) {
+  constructor(cpu: CPU, cpuRam: RAM, ppu: PPU) {
     this.cpu = cpu;
-    this.ram = ram;
+    this.cpuRam = cpuRam;
+    this.ppu = ppu;
 
     this.cpu.connectBus(this);
   }
 
-  private isCorrectAddrRange(addr: number): boolean {
-    return addr >= 0 && addr <= this.ram.getMemorySize();
+  private isCorrectCpuAddrRange(addr: number): boolean {
+    const cpuAddrStart = 0x0000;
+    const cpuAddrEnd = 0x1fff;
+
+    return addr >= cpuAddrStart && addr <= cpuAddrEnd;
   }
 
-  write(addr: number, data: number): void {
-    const isCorrectAddrRange = this.isCorrectAddrRange(addr);
+  cpuWrite(addr: number, data: number): void {
+    const isCorrectAddrRange = this.isCorrectCpuAddrRange(addr);
+    const ramSize = this.cpuRam.getMemorySize() - 1;
+    const mirrorAddr = addr & ramSize;
 
     if (isCorrectAddrRange) {
-      this.ram.setData(addr, data);
+      this.cpuRam.setData(mirrorAddr, data);
     }
   }
 
-  read(addr: number, readOnly = false): number {
-    const isCorrectAddrRange = this.isCorrectAddrRange(addr);
+  cpuRead(addr: number, readOnly = false): number {
+    const isCorrectAddrRange = this.isCorrectCpuAddrRange(addr);
+    const ramSize = this.cpuRam.getMemorySize() - 1;
+    const mirrorAddr = addr & ramSize;
 
     if (isCorrectAddrRange) {
-      return this.ram.getData(addr);
+      return this.cpuRam.getData(mirrorAddr);
     }
 
-    return 0;
+    return 0x00;
   }
 }
 

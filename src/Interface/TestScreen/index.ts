@@ -49,12 +49,12 @@ class TestScreen {
     const codeParts = asmHexCode.split(' ');
 
     codeParts.forEach(code => {
-      this.bus.write(ramOffset++, parseInt(code, 16));
+      this.bus.cpuWrite(ramOffset++, parseInt(code, 16));
     });
 
     // reset vectors
-    this.bus.write(0xfffc, 0x00);
-    this.bus.write(0xfffd, 0x80);
+    this.bus.cpuWrite(0xfffc, 0x00);
+    this.bus.cpuWrite(0xfffd, 0x80);
 
     this.dissasmCode = this.bus.cpu.disassemble(0x0000, 0xffff);
 
@@ -106,7 +106,7 @@ class TestScreen {
       let ramRow = `$${toStringWithBase(addr, 16, 4)}:`;
 
       for (let column = 0; column < columns; column++) {
-        const columnAddr = this.bus.read(addr, true);
+        const columnAddr = this.bus.cpuRead(addr, true);
         ramRow += ` ${toStringWithBase(columnAddr, 16, 2).toUpperCase()}`;
         addr++;
       }

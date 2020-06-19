@@ -1,8 +1,10 @@
 class RAM {
-  private readonly SIZE = 64 * 1024;
+  private readonly SIZE: number;
   private memory: Uint8Array;
 
-  constructor() {
+  constructor(size: number) {
+    this.SIZE = size;
+
     const buffer = new ArrayBuffer(this.SIZE);
     this.memory = new Uint8Array(buffer);
   }

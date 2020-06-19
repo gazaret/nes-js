@@ -1,12 +1,15 @@
 import CPU from './Hardware/CPU';
 import Bus from './Hardware/Bus';
+import PPU from './Hardware/PPU';
 import RAM from './Devices/RAM';
 import Interface from './Interface';
 
 const cpu = new CPU();
-const ram = new RAM();
+const cpuRam = new RAM(2048);
 
-const bus = new Bus(cpu, ram);
+const ppu = new PPU();
+
+const bus = new Bus(cpu, cpuRam, ppu);
 
 const webInterface = new Interface(bus);
 
