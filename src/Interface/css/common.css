@@ -13,3 +13,20 @@ body {
 * {
   box-sizing: content-box;
 }
+
+.upload {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: flex;
+}
+
+.upload__label {
+  color: white;
+  border: 1px solid white;
+  padding: 8px;
+}
+
+.upload__input {
+  display: none;
+}

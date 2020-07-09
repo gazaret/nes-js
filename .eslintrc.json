@@ -52,7 +52,6 @@
     "no-useless-return": "error",
     "prefer-promise-reject-errors": "error",
     "no-undefined": "error",
-    "array-bracket-newline": ["error", { "multiline": true }],
     "comma-dangle": ["error", "always-multiline"],
     "comma-style": "error",
     "eol-last": "error",

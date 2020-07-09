@@ -1,5 +1,5 @@
 // 16 bits number - 00000000 00000000
-//                  ^ HIGHT  ^ LOWER
+//                  ^ HIGH  ^ LOWER
 export const HIGH_8_BIT = 0xff00;
 export const LOWER_8_BIT = 0x00ff;
 

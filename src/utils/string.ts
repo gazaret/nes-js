@@ -19,3 +19,13 @@ export const toStringWithBase = (
 
   return '0'.repeat(remainChars) + str;
 };
+
+export const getStringFromBytes = (bytes: Uint8Array): string => {
+  let parsedName = '';
+
+  bytes.forEach((byte: number) => {
+    parsedName += String.fromCharCode(byte);
+  });
+
+  return parsedName;
+};

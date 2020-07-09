@@ -96,7 +96,7 @@ class CPU {
     while (addr <= stop16n) {
       const lineAddr = addr;
 
-      const opcodeIdx = this.bus.cpuRead(addr, true);
+      const opcodeIdx = this.bus.busRead(addr, true);
 
       const currentOpcode = this.opcodeMatrix[opcodeIdx];
 
@@ -105,13 +105,17 @@ class CPU {
       } `;
       addr++;
 
+      if (currentOpcode.name !== 'BRK') {
+        console.log(currentOpcode.name);
+      }
+
       switch (currentOpcode.addrMode.name) {
         case 'IMP': {
           instruction += '{IMP}';
           break;
         }
         case 'IMM': {
-          const value = this.bus.cpuRead(addr, true);
+          const value = this.bus.busRead(addr, true);
           addr++;
           const strValue = toStringWithBase(value, 16, 2).toUpperCase();
 
@@ -119,7 +123,7 @@ class CPU {
           break;
         }
         case 'ZP0': {
-          const lo = this.bus.cpuRead(addr, true);
+          const lo = this.bus.busRead(addr, true);
           addr++;
           const strValue = toStringWithBase(lo, 16, 2).toUpperCase();
 
@@ -127,7 +131,7 @@ class CPU {
           break;
         }
         case 'ZPX': {
-          const lo = this.bus.cpuRead(addr, true);
+          const lo = this.bus.busRead(addr, true);
           addr++;
           const strValue = toStringWithBase(lo, 16, 2).toUpperCase();
 
@@ -135,7 +139,7 @@ class CPU {
           break;
         }
         case 'ZPY': {
-          const lo = this.bus.cpuRead(addr, true);
+          const lo = this.bus.busRead(addr, true);
           addr++;
           const strValue = toStringWithBase(lo, 16, 2).toUpperCase();
 
@@ -143,7 +147,7 @@ class CPU {
           break;
         }
         case 'IZX': {
-          const lo = this.bus.cpuRead(addr, true);
+          const lo = this.bus.busRead(addr, true);
           addr++;
           const strValue = toStringWithBase(lo, 16, 2).toUpperCase();
 
@@ -151,7 +155,7 @@ class CPU {
           break;
         }
         case 'IZY': {
-          const lo = this.bus.cpuRead(addr, true);
+          const lo = this.bus.busRead(addr, true);
           addr++;
           const strValue = toStringWithBase(lo, 16, 2).toUpperCase();
 
@@ -159,9 +163,9 @@ class CPU {
           break;
         }
         case 'ABS': {
-          const lo = this.bus.cpuRead(addr, true);
+          const lo = this.bus.busRead(addr, true);
           addr++;
-          const hi = this.bus.cpuRead(addr, true);
+          const hi = this.bus.busRead(addr, true);
           addr++;
 
           const n16 = create16Number(hi, lo);
@@ -171,9 +175,9 @@ class CPU {
           break;
         }
         case 'ABX': {
-          const lo = this.bus.cpuRead(addr, true);
+          const lo = this.bus.busRead(addr, true);
           addr++;
-          const hi = this.bus.cpuRead(addr, true);
+          const hi = this.bus.busRead(addr, true);
           addr++;
 
           const n16 = create16Number(hi, lo);
@@ -183,9 +187,9 @@ class CPU {
           break;
         }
         case 'ABY': {
-          const lo = this.bus.cpuRead(addr, true);
+          const lo = this.bus.busRead(addr, true);
           addr++;
-          const hi = this.bus.cpuRead(addr, true);
+          const hi = this.bus.busRead(addr, true);
           addr++;
 
           const n16 = create16Number(hi, lo);
@@ -195,9 +199,9 @@ class CPU {
           break;
         }
         case 'IND': {
-          const lo = this.bus.cpuRead(addr, true);
+          const lo = this.bus.busRead(addr, true);
           addr++;
-          const hi = this.bus.cpuRead(addr, true);
+          const hi = this.bus.busRead(addr, true);
           addr++;
 
           const n16 = create16Number(hi, lo);
@@ -207,7 +211,7 @@ class CPU {
           break;
         }
         case 'REL': {
-          const value = this.bus.cpuRead(addr, true);
+          const value = this.bus.busRead(addr, true);
           addr++;
 
           const value16n = value | HIGH_8_BIT;
@@ -234,12 +238,12 @@ class CPU {
   // I/O
   write(addr: number, data: number): void {
     if (this.bus) {
-      this.bus.cpuWrite(addr, data);
+      this.bus.busWrite(addr, data);
     }
   }
   read(addr: number): number {
     if (this.bus) {
-      return this.bus.cpuRead(addr, false);
+      return this.bus.busRead(addr, false);
     }
 
     return 0;

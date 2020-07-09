@@ -1,5 +1,6 @@
 import Bus from '../../Hardware/Bus';
 import { IFlag } from '../../Hardware/CPU';
+import Cartridge from '../../Devices/Cartridge';
 import { toStringWithBase } from '../../utils/string';
 
 class TestScreen {
@@ -29,9 +30,13 @@ class TestScreen {
     this.canvasWidth = this.canvas.width;
     this.canvasHeight = this.canvas.height;
 
-    this.fontSetup();
+    const cartridgeUpload = document.querySelector(
+      '#cartridge',
+    ) as HTMLInputElement;
 
-    this.loadProgram();
+    cartridgeUpload.addEventListener('change', this.handleCartridgeUpload);
+
+    this.fontSetup();
 
     this.handleControl();
   }
@@ -41,24 +46,34 @@ class TestScreen {
     this.context.textBaseline = 'top';
   }
 
+  handleCartridgeUpload = async (e: any): Promise<void> => {
+    const file: File = e.target?.files[0];
+
+    if (!file) {
+      return;
+    }
+
+    const cartridge = new Cartridge();
+
+    await cartridge.loadCartridge(file);
+
+    this.bus.insertCartridge(cartridge);
+
+    this.loadProgram();
+  };
+
   loadProgram(): void {
-    const asmHexCode =
-      'A2 0A 8E 00 00 A2 03 8E 01 00 AC 00 00 A9 00 18 6D 01 00 88 D0 FA 8D 02 00 EA EA EA';
-    let ramOffset = 0x8000;
-
-    const codeParts = asmHexCode.split(' ');
-
-    codeParts.forEach(code => {
-      this.bus.cpuWrite(ramOffset++, parseInt(code, 16));
-    });
-
     // reset vectors
-    this.bus.cpuWrite(0xfffc, 0x00);
-    this.bus.cpuWrite(0xfffd, 0x80);
+    this.bus.busWrite(0xfffc, 0x00);
+    this.bus.busWrite(0xfffd, 0x80);
 
     this.dissasmCode = this.bus.cpu.disassemble(0x0000, 0xffff);
 
-    this.bus.cpu.reset();
+    console.info(this.dissasmCode);
+
+    this.bus.reset();
+
+    this.render();
   }
 
   handleControl(): void {
@@ -75,7 +90,7 @@ class TestScreen {
 
   handleNextInstruction(): void {
     do {
-      this.bus.cpu.clock();
+      this.bus.clock();
     } while (!this.bus.cpu.isCompleteCycle);
 
     this.render();
@@ -106,7 +121,7 @@ class TestScreen {
       let ramRow = `$${toStringWithBase(addr, 16, 4)}:`;
 
       for (let column = 0; column < columns; column++) {
-        const columnAddr = this.bus.cpuRead(addr, true);
+        const columnAddr = this.bus.busRead(addr, true);
         ramRow += ` ${toStringWithBase(columnAddr, 16, 2).toUpperCase()}`;
         addr++;
       }
@@ -141,7 +156,7 @@ class TestScreen {
     const accumulator = toStringWithBase(cpu.accumulator, 16, 2).toUpperCase();
     const xRegister = toStringWithBase(cpu.xRegister, 16, 2).toUpperCase();
     const yRegister = toStringWithBase(cpu.yRegister, 16, 2).toUpperCase();
-    const statusRegiser = toStringWithBase(
+    const statusRegister = toStringWithBase(
       cpu.statusRegister,
       16,
       2,
@@ -173,7 +188,7 @@ class TestScreen {
     );
     nextY += this.fontSize;
     this.context.fillText(
-      `Status Register - 0x${statusRegiser} (${cpu.statusRegister})`,
+      `Status Register - 0x${statusRegister} (${cpu.statusRegister})`,
       x,
       nextY,
     );
@@ -221,7 +236,7 @@ class TestScreen {
     this.context.fillStyle = '#000';
     this.context.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
 
-    this.drawRAM(2, 2, 0x0000, 16, 16);
+    this.drawRAM(2, 2, 0xbff4, 16, 16);
     this.drawRAM(2, 16 * this.fontSize + 30, 0x8000, 16, 16);
 
     this.drawControl(2, 32 * this.fontSize + 60);
